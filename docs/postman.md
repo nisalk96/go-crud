@@ -2,6 +2,8 @@
 
 This API is covered by a shared Postman collection on the team workspace. Use the link below to join the workspace and open the collection (you need a Postman account).
 
+You can also import the checked-in collection file from the repository root: **`Movies_API.postman_collection.json`** (Postman → Import → File).
+
 **Join the Postman team / workspace**
 
 https://app.getpostman.com/join-team?invite_code=5411d9453b92d79ca920ef1171176d05e83c0a37ec3a9753ee68ee88f87a808a&target_code=c0a24692ac36d14f700e24f619f1f19d

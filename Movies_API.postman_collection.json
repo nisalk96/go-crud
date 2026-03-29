@@ -1,0 +1,191 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-movies-restapi-0001",
+    "name": "Movies API (restapi)",
+    "description": "Import this file in Postman (Import → File). Set the collection variable `baseUrl` to your server (e.g. http://localhost:8080). After creating a movie, set `movieId` from the response for the other requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "movieId",
+      "value": ""
+    },
+    {
+      "key": "coverFilename",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movies",
+      "item": [
+        {
+          "name": "List movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/movies"
+          }
+        },
+        {
+          "name": "Create movie (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Example Movie\",\n  \"rate\": 8.5,\n  \"description\": \"Optional description.\",\n  \"imdbLink\": \"https://www.imdb.com/title/tt1375666/\",\n  \"trailerYouTubeLink\": \"https://www.youtube.com/watch?v=example\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/movies"
+          }
+        },
+        {
+          "name": "Create movie (multipart + cover)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Poster Upload",
+                  "type": "text"
+                },
+                {
+                  "key": "rate",
+                  "value": "7.5",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Created with multipart form.",
+                  "type": "text"
+                },
+                {
+                  "key": "imdbLink",
+                  "value": "https://www.imdb.com/title/tt0111161/",
+                  "type": "text"
+                },
+                {
+                  "key": "trailerYouTubeLink",
+                  "value": "https://www.youtube.com/watch?v=example",
+                  "type": "text"
+                },
+                {
+                  "key": "cover",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/v1/movies"
+          }
+        },
+        {
+          "name": "Get movie by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/movies/{{movieId}}"
+          }
+        },
+        {
+          "name": "Update movie (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rate\": 9.0,\n  \"description\": \"Updated description.\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/movies/{{movieId}}"
+          }
+        },
+        {
+          "name": "Clear cover (PATCH coverArt empty)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coverArt\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/movies/{{movieId}}"
+          }
+        },
+        {
+          "name": "Upload or replace cover",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "cover",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/v1/movies/{{movieId}}/cover"
+          }
+        },
+        {
+          "name": "Delete movie",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/movies/{{movieId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cover files",
+      "item": [
+        {
+          "name": "Get cover image",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/files/covers/{{coverFilename}}"
+          }
+        }
+      ]
+    }
+  ]
+}

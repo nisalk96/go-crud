@@ -76,7 +76,7 @@ Responses include a computed **`coverArtURL`** path (e.g. `/api/v1/files/covers/
 
 ## Postman
 
-See [docs/postman.md](docs/postman.md).
+Import **`Movies_API.postman_collection.json`** from the project root (Postman → Import → File), or use the team workspace link in [docs/postman.md](docs/postman.md).
 
 ## Project layout
 
