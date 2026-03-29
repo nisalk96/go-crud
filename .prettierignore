@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Go / tooling
+tmp/
+bin/
+vendor/
+data/
+coverage.out
+*.exe
+go.sum
+
+# Env & secrets
+.env
+.env.*
+
+# Lockfiles (optional: remove this line if you want Prettier to format package-lock.json)
+package-lock.json

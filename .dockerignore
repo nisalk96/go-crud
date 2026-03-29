@@ -16,6 +16,9 @@ docs/
 bin/
 *.exe
 
+# Node
+node_modules/
+
 # IDE
 .idea/
 .vscode/

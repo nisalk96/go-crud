@@ -1,3 +1,10 @@
+# Node (Prettier)
+node_modules/
+
+# Air (live reload) — build output + log
+/tmp/
+build-errors.log
+
 # Uploaded cover art (local dev)
 /data/
 

@@ -6,14 +6,14 @@ Author: `nisalk.dev`
 
 ## Requirements
 
-- [Go](https://go.dev/dl/) 1.22 or newer  
-- A MongoDB instance (local or [Atlas](https://www.mongodb.com/cloud/atlas)) and a connection URI  
+- [Go](https://go.dev/dl/) 1.22 or newer
+- A MongoDB instance (local or [Atlas](https://www.mongodb.com/cloud/atlas)) and a connection URI
 
 ## Configuration
 
-1. Copy `.env.example` to `.env`.  
-2. Set **`MONGODB_URI`** (required at startup).  
-3. Optional: `MONGODB_DATABASE`, `MONGODB_COLLECTION_MOVIES`, **`UPLOAD_DIR`** (default `data/covers`), **`MAX_UPLOAD_MB`** (default `10`), `HTTP_ADDR` (default `:8080`).  
+1. Copy `.env.example` to `.env`.
+2. Set **`MONGODB_URI`** (required at startup).
+3. Optional: `MONGODB_DATABASE`, `MONGODB_COLLECTION_MOVIES`, **`UPLOAD_DIR`** (default `data/covers`), **`MAX_UPLOAD_MB`** (default `10`), `HTTP_ADDR` (default `:8080`).
 
 The app creates `UPLOAD_DIR` on startup. Environment variables can also be set without a `.env` file.
 
@@ -28,6 +28,33 @@ go build -o bin/server ./cmd/server
 ```
 
 On Windows: `bin\server.exe` if you build with `-o bin/server.exe`.
+
+## Development (auto-restart)
+
+[Air](https://github.com/air-verse/air) rebuilds and restarts the server when you change Go files.
+
+```bash
+go install github.com/air-verse/air@latest
+```
+
+From the project root (with `.env` configured):
+
+```bash
+air
+```
+
+Settings live in **`.air.toml`** (build output under `tmp/`, ignored by git). On Windows, ensure `air` is on your `PATH` (often `%USERPROFILE%\go\bin`).
+
+### Formatting (Prettier)
+
+JSON, Markdown, and YAML in this repo are formatted with [Prettier](https://prettier.io/) (`.prettierrc`). Go source uses `gofmt` / your editor’s Go formatter, not Prettier.
+
+```bash
+npm install
+npm run format
+```
+
+`npm run format:check` exits with an error if anything would change (useful in CI).
 
 ## Docker
 
@@ -57,16 +84,16 @@ Host port: `HTTP_PORT` (defaults to `8080`).
 
 ## API
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/health` | Liveness |
-| `GET` | `/api/v1/movies` | List movies |
-| `POST` | `/api/v1/movies` | Create (JSON **or** `multipart/form-data`; see below) |
-| `GET` | `/api/v1/movies/{id}` | Get one |
-| `PATCH` | `/api/v1/movies/{id}` | Partial update (JSON) |
-| `DELETE` | `/api/v1/movies/{id}` | Delete (removes cover file if present) |
-| `POST` | `/api/v1/movies/{id}/cover` | Upload or replace cover (`multipart` field **`cover`**) |
-| `GET` | `/api/v1/files/covers/{filename}` | Download a stored cover image |
+| Method   | Path                              | Description                                             |
+| -------- | --------------------------------- | ------------------------------------------------------- |
+| `GET`    | `/health`                         | Liveness                                                |
+| `GET`    | `/api/v1/movies`                  | List movies                                             |
+| `POST`   | `/api/v1/movies`                  | Create (JSON **or** `multipart/form-data`; see below)   |
+| `GET`    | `/api/v1/movies/{id}`             | Get one                                                 |
+| `PATCH`  | `/api/v1/movies/{id}`             | Partial update (JSON)                                   |
+| `DELETE` | `/api/v1/movies/{id}`             | Delete (removes cover file if present)                  |
+| `POST`   | `/api/v1/movies/{id}/cover`       | Upload or replace cover (`multipart` field **`cover`**) |
+| `GET`    | `/api/v1/files/covers/{filename}` | Download a stored cover image                           |
 
 **Create JSON** (`Content-Type: application/json`): `title` (required), `rate` (0–10), `description`, `imdbLink`, `trailerYouTubeLink` (URLs must use `http://` or `https://` when set).
 
