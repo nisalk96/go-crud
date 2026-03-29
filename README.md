@@ -18,6 +18,28 @@ Author: `nisalk.dev`
 
 The app creates `UPLOAD_DIR` on startup. Environment variables can also be set without a `.env` file.
 
+### API token (`API_TOKEN`)
+
+The server does not issue tokens. **`API_TOKEN` is a shared secret you create** and paste into `.env`; clients must send the **exact same** value as `Authorization: Bearer <token>` or `X-API-Key: <token>`.
+
+Generate a random secret (pick one):
+
+```bash
+openssl rand -hex 32
+```
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+On **PowerShell** (.NET):
+
+```powershell
+$b = New-Object byte[] 32; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [BitConverter]::ToString($b).Replace('-','').ToLower()
+```
+
+Then set `API_TOKEN=<output>` and use that same string in Postman’s **`apiToken`** variable.
+
 ## Run
 
 ```bash
@@ -122,3 +144,7 @@ internal/handlers/    # HTTP handlers
 internal/auth/        # API token middleware
 internal/router/      # Routes and static cover files
 ```
+
+## License
+
+[MIT](LICENSE)
