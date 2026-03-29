@@ -2,8 +2,18 @@
   "info": {
     "_postman_id": "a1b2c3d4-movies-restapi-0001",
     "name": "Movies API (restapi)",
-    "description": "Import this file in Postman (Import → File). Set the collection variable `baseUrl` to your server (e.g. http://localhost:8080). After creating a movie, set `movieId` from the response for the other requests.",
+    "description": "Import this file in Postman (Import → File). Set `baseUrl` and `apiToken` to match server `API_TOKEN` (required). All requests use Bearer auth. After creating a movie, set `movieId` from the response.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{apiToken}}",
+        "type": "string"
+      }
+    ]
   },
   "variable": [
     {
@@ -17,6 +27,10 @@
     {
       "key": "coverFilename",
       "value": ""
+    },
+    {
+      "key": "apiToken",
+      "value": "your-secret-token-here"
     }
   ],
   "item": [

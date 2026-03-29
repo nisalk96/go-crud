@@ -4,17 +4,19 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	HTTPAddr             string
-	MongoURI             string
-	MongoDatabase        string
+	HTTPAddr              string
+	MongoURI              string
+	MongoDatabase         string
 	MongoCollectionMovies string
-	UploadDir            string
-	MaxUploadBytes       int64
+	UploadDir             string
+	MaxUploadBytes        int64
+	APIToken string
 }
 
 func Load() (*Config, error) {
@@ -38,6 +40,11 @@ func Load() (*Config, error) {
 	}
 	maxBytes := int64(maxMB) * 1024 * 1024
 
+	apiToken := strings.TrimSpace(os.Getenv("API_TOKEN"))
+	if apiToken == "" {
+		return nil, fmt.Errorf("API_TOKEN is required (set it in .env or the environment)")
+	}
+
 	return &Config{
 		HTTPAddr:              addr,
 		MongoURI:              mongoURI,
@@ -45,6 +52,7 @@ func Load() (*Config, error) {
 		MongoCollectionMovies: moviesColl,
 		UploadDir:             uploadDir,
 		MaxUploadBytes:        maxBytes,
+		APIToken:              apiToken,
 	}, nil
 }
 

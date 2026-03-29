@@ -51,7 +51,7 @@ func main() {
 		Covers:          coverStore,
 		PublicCoverPath: "/api/v1/files/covers",
 	}
-	h := router.New(movieHandler, cfg.UploadDir)
+	h := router.New(movieHandler, cfg.UploadDir, cfg.APIToken)
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,

@@ -4,18 +4,20 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"restapi/internal/auth"
 	"restapi/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func New(mh *handlers.MovieHandler, uploadDir string) http.Handler {
+func New(mh *handlers.MovieHandler, uploadDir, apiToken string) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(auth.Middleware(apiToken))
 
 	r.Get("/health", handlers.Health)
 

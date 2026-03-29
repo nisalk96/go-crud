@@ -13,7 +13,8 @@ Author: `nisalk.dev`
 
 1. Copy `.env.example` to `.env`.
 2. Set **`MONGODB_URI`** (required at startup).
-3. Optional: `MONGODB_DATABASE`, `MONGODB_COLLECTION_MOVIES`, **`UPLOAD_DIR`** (default `data/covers`), **`MAX_UPLOAD_MB`** (default `10`), `HTTP_ADDR` (default `:8080`).
+3. Set **`API_TOKEN`** — **every** route requires `Authorization: Bearer <token>` or `X-API-Key: <token>` (including **`/health`** and cover images). Plain `<img src="...">` without credentials will not work unless the client sends the header (e.g. fetch with auth, or a front-end proxy).
+4. Optional: `MONGODB_DATABASE`, `MONGODB_COLLECTION_MOVIES`, **`UPLOAD_DIR`** (default `data/covers`), **`MAX_UPLOAD_MB`** (default `10`), `HTTP_ADDR` (default `:8080`).
 
 The app creates `UPLOAD_DIR` on startup. Environment variables can also be set without a `.env` file.
 
@@ -62,15 +63,17 @@ npm run format
 docker build -t restapi .
 docker run --rm -p 8080:8080 \
   -e MONGODB_URI="your-connection-string" \
+  -e API_TOKEN="your-secret-token" \
   -e UPLOAD_DIR=/data/covers \
   -v restapi_covers:/data/covers \
   restapi
 ```
 
-Compose loads variables from `.env` and persists uploads on the `movie_uploads` volume:
+Compose loads variables from `.env` (including **`API_TOKEN`**) and persists uploads on the `movie_uploads` volume:
 
 ```bash
 export MONGODB_URI="your-connection-string"
+export API_TOKEN="your-secret-token"
 docker compose up --build
 ```
 
@@ -93,7 +96,9 @@ Host port: `HTTP_PORT` (defaults to `8080`).
 | `PATCH`  | `/api/v1/movies/{id}`             | Partial update (JSON)                                   |
 | `DELETE` | `/api/v1/movies/{id}`             | Delete (removes cover file if present)                  |
 | `POST`   | `/api/v1/movies/{id}/cover`       | Upload or replace cover (`multipart` field **`cover`**) |
-| `GET`    | `/api/v1/files/covers/{filename}` | Download a stored cover image                           |
+| `GET`    | `/api/v1/files/covers/{filename}` | Download a stored cover image (requires token)          |
+
+Send **`Authorization: Bearer <token>`** or **`X-API-Key: <token>`** on **every** request (same value as **`API_TOKEN`** in the server env).
 
 **Create JSON** (`Content-Type: application/json`): `title` (required), `rate` (0–10), `description`, `imdbLink`, `trailerYouTubeLink` (URLs must use `http://` or `https://` when set).
 
@@ -114,5 +119,6 @@ internal/models/      # Movie types
 internal/repository/  # MongoDB
 internal/storage/     # Cover file storage
 internal/handlers/    # HTTP handlers
+internal/auth/        # API token middleware
 internal/router/      # Routes and static cover files
 ```

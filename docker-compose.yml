@@ -10,6 +10,7 @@ services:
       UPLOAD_DIR: ${UPLOAD_DIR:-/data/covers}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
       HTTP_ADDR: :8080
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN in your environment or .env file}
     volumes:
       - movie_uploads:/data/covers
 

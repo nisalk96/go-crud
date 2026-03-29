@@ -10,6 +10,8 @@ https://app.getpostman.com/join-team?invite_code=5411d9453b92d79ca920ef1171176d0
 
 After you join, set the collection or environment **base URL** to match your server (for example `http://localhost:8080` if you use the default `HTTP_ADDR`).
 
+Set the collection variable **`apiToken`** to the same value as server **`API_TOKEN`** (Bearer auth). All requests in this collection use that token.
+
 ## Endpoints (reference)
 
 | Method | Path                              | Notes                                                                                                                           |
