@@ -13,12 +13,17 @@ import (
 	"restapi/internal/handlers"
 	"restapi/internal/repository"
 	"restapi/internal/router"
+	"restapi/internal/storage"
 )
 
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("config: %v", err)
+	}
+
+	if err := os.MkdirAll(cfg.UploadDir, 0o755); err != nil {
+		log.Fatalf("upload dir: %v", err)
 	}
 
 	ctx := context.Background()
@@ -39,9 +44,14 @@ func main() {
 	}
 
 	db := client.Database(cfg.MongoDatabase)
-	itemRepo := repository.NewItemRepository(db, cfg.MongoCollectionItems)
-	itemHandler := &handlers.ItemHandler{Repo: itemRepo}
-	h := router.New(itemHandler)
+	movieRepo := repository.NewMovieRepository(db, cfg.MongoCollectionMovies)
+	coverStore := &storage.CoverStorage{Dir: cfg.UploadDir, MaxBytes: cfg.MaxUploadBytes}
+	movieHandler := &handlers.MovieHandler{
+		Repo:            movieRepo,
+		Covers:          coverStore,
+		PublicCoverPath: "/api/v1/files/covers",
+	}
+	h := router.New(movieHandler, cfg.UploadDir)
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,

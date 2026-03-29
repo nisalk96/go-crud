@@ -13,10 +13,12 @@ After you join, set the collection or environment **base URL** to match your ser
 | Method | Path | Notes |
 |--------|------|--------|
 | GET | `/health` | Health check |
-| GET | `/api/v1/items` | List items |
-| POST | `/api/v1/items` | Create item JSON: `name`, optional `notes` |
-| GET | `/api/v1/items/{id}` | Get by MongoDB ObjectID hex |
-| PATCH | `/api/v1/items/{id}` | Partial update: `name` and/or `notes` |
-| DELETE | `/api/v1/items/{id}` | Delete item |
+| GET | `/api/v1/movies` | List movies |
+| POST | `/api/v1/movies` | Create: JSON body **or** multipart with `title`, optional `rate`, `description`, `imdbLink`, `trailerYouTubeLink`, file `cover` |
+| GET | `/api/v1/movies/{id}` | Get by MongoDB ObjectID hex |
+| PATCH | `/api/v1/movies/{id}` | JSON partial update; set `"coverArt": ""` to clear cover (deletes file) |
+| DELETE | `/api/v1/movies/{id}` | Delete movie |
+| POST | `/api/v1/movies/{id}/cover` | Multipart field `cover` — upload or replace poster |
+| GET | `/api/v1/files/covers/{filename}` | Serve stored cover image |
 
 Ensure `MONGODB_URI` is set (see `.env.example`) before running the server locally.

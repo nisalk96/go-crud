@@ -3,15 +3,18 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	HTTPAddr          string
-	MongoURI          string
-	MongoDatabase     string
-	MongoCollectionItems string
+	HTTPAddr             string
+	MongoURI             string
+	MongoDatabase        string
+	MongoCollectionMovies string
+	UploadDir            string
+	MaxUploadBytes       int64
 }
 
 func Load() (*Config, error) {
@@ -23,14 +26,25 @@ func Load() (*Config, error) {
 	}
 
 	db := getenvDefault("MONGODB_DATABASE", "restapi")
-	itemsColl := getenvDefault("MONGODB_COLLECTION_ITEMS", "items")
+	moviesColl := getenvDefault("MONGODB_COLLECTION_MOVIES", "movies")
 	addr := getenvDefault("HTTP_ADDR", ":8080")
+	uploadDir := getenvDefault("UPLOAD_DIR", "data/covers")
+
+	maxMB := 10
+	if s := os.Getenv("MAX_UPLOAD_MB"); s != "" {
+		if v, err := strconv.Atoi(s); err == nil && v > 0 {
+			maxMB = v
+		}
+	}
+	maxBytes := int64(maxMB) * 1024 * 1024
 
 	return &Config{
-		HTTPAddr:               addr,
-		MongoURI:               mongoURI,
-		MongoDatabase:          db,
-		MongoCollectionItems:   itemsColl,
+		HTTPAddr:              addr,
+		MongoURI:              mongoURI,
+		MongoDatabase:         db,
+		MongoCollectionMovies: moviesColl,
+		UploadDir:             uploadDir,
+		MaxUploadBytes:        maxBytes,
 	}, nil
 }
 

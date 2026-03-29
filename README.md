@@ -1,6 +1,6 @@
-# REST API (Go + MongoDB)
+# Movies API (Go + MongoDB)
 
-A small JSON REST service for managing **items** with MongoDB persistence, structured as a standard Go layout (`cmd/`, `internal/`).
+JSON REST service for **movies** (title, rating, description, IMDb URL, YouTube trailer URL) with **cover art** uploads stored on disk and served under `/api/v1/files/covers/…`.
 
 Author: `nisalk.dev`
 
@@ -12,10 +12,10 @@ Author: `nisalk.dev`
 ## Configuration
 
 1. Copy `.env.example` to `.env`.  
-2. Set **`MONGODB_URI`** to your MongoDB connection string (required at startup).  
-3. Optional: adjust `MONGODB_DATABASE`, `MONGODB_COLLECTION_ITEMS`, and `HTTP_ADDR` (default `:8080`).  
+2. Set **`MONGODB_URI`** (required at startup).  
+3. Optional: `MONGODB_DATABASE`, `MONGODB_COLLECTION_MOVIES`, **`UPLOAD_DIR`** (default `data/covers`), **`MAX_UPLOAD_MB`** (default `10`), `HTTP_ADDR` (default `:8080`).  
 
-Variables are loaded from the environment; if present, a `.env` file in the project root is loaded automatically.
+The app creates `UPLOAD_DIR` on startup. Environment variables can also be set without a `.env` file.
 
 ## Run
 
@@ -23,64 +23,69 @@ Variables are loaded from the environment; if present, a `.env` file in the proj
 go run ./cmd/server
 ```
 
-Build a binary:
-
 ```bash
 go build -o bin/server ./cmd/server
 ```
 
-On Windows, you can use `bin\server.exe` after building with `-o bin/server.exe`.
-
-The server performs a MongoDB ping on startup and shuts down gracefully on `SIGINT` / `SIGTERM`.
+On Windows: `bin\server.exe` if you build with `-o bin/server.exe`.
 
 ## Docker
 
-Build and run the API image (set `MONGODB_URI` in your environment or in a `.env` file next to the compose file; Compose reads `.env` for variable substitution):
-
 ```bash
 docker build -t restapi .
-docker run --rm -p 8080:8080 -e MONGODB_URI="your-connection-string" restapi
+docker run --rm -p 8080:8080 \
+  -e MONGODB_URI="your-connection-string" \
+  -e UPLOAD_DIR=/data/covers \
+  -v restapi_covers:/data/covers \
+  restapi
 ```
 
-Or with Compose (Atlas or any reachable URI):
+Compose loads variables from `.env` and persists uploads on the `movie_uploads` volume:
 
 ```bash
 export MONGODB_URI="your-connection-string"
 docker compose up --build
 ```
 
-Optional local MongoDB in Docker (API uses `mongodb://mongo:27017`):
+Local MongoDB stack:
 
 ```bash
 docker compose -f docker-compose.yml -f compose.mongo.yaml up --build
 ```
 
-Override the host port with `HTTP_PORT` (maps to container `8080`), for example `HTTP_PORT=3000 docker compose up`.
+Host port: `HTTP_PORT` (defaults to `8080`).
 
 ## API
 
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/health` | Liveness |
-| `GET` | `/api/v1/items` | List items |
-| `POST` | `/api/v1/items` | Create (`name` required; `notes` optional) |
-| `GET` | `/api/v1/items/{id}` | Get by MongoDB ObjectID (hex string) |
-| `PATCH` | `/api/v1/items/{id}` | Partial update (`name` and/or `notes`) |
-| `DELETE` | `/api/v1/items/{id}` | Delete |
+| `GET` | `/api/v1/movies` | List movies |
+| `POST` | `/api/v1/movies` | Create (JSON **or** `multipart/form-data`; see below) |
+| `GET` | `/api/v1/movies/{id}` | Get one |
+| `PATCH` | `/api/v1/movies/{id}` | Partial update (JSON) |
+| `DELETE` | `/api/v1/movies/{id}` | Delete (removes cover file if present) |
+| `POST` | `/api/v1/movies/{id}/cover` | Upload or replace cover (`multipart` field **`cover`**) |
+| `GET` | `/api/v1/files/covers/{filename}` | Download a stored cover image |
 
-Responses are JSON. Create/update bodies use `Content-Type: application/json`.
+**Create JSON** (`Content-Type: application/json`): `title` (required), `rate` (0–10), `description`, `imdbLink`, `trailerYouTubeLink` (URLs must use `http://` or `https://` when set).
+
+**Create multipart** (`Content-Type: multipart/form-data`): fields `title`, optional `rate`, `description`, `imdbLink`, `trailerYouTubeLink`, optional file field **`cover`** (jpeg/png/webp/gif).
+
+Responses include a computed **`coverArtURL`** path (e.g. `/api/v1/files/covers/<filename>.jpg`) when a cover exists.
 
 ## Postman
 
-Shared collection and team invite are documented in [docs/postman.md](docs/postman.md).
+See [docs/postman.md](docs/postman.md).
 
 ## Project layout
 
 ```
-cmd/server/          # Application entrypoint
-internal/config/     # Environment configuration
-internal/models/     # Domain types
-internal/repository/ # MongoDB access
-internal/handlers/   # HTTP handlers
-internal/router/     # Routes and middleware
+cmd/server/           # Entrypoint
+internal/config/      # Configuration
+internal/models/      # Movie types
+internal/repository/  # MongoDB
+internal/storage/     # Cover file storage
+internal/handlers/    # HTTP handlers
+internal/router/      # Routes and static cover files
 ```

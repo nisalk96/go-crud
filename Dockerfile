@@ -22,5 +22,6 @@ USER nonroot:nonroot
 EXPOSE 8080
 
 ENV HTTP_ADDR=:8080
+ENV UPLOAD_DIR=/data/covers
 
 ENTRYPOINT ["/server"]
