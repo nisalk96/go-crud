@@ -33,6 +33,30 @@ On Windows, you can use `bin\server.exe` after building with `-o bin/server.exe`
 
 The server performs a MongoDB ping on startup and shuts down gracefully on `SIGINT` / `SIGTERM`.
 
+## Docker
+
+Build and run the API image (set `MONGODB_URI` in your environment or in a `.env` file next to the compose file; Compose reads `.env` for variable substitution):
+
+```bash
+docker build -t restapi .
+docker run --rm -p 8080:8080 -e MONGODB_URI="your-connection-string" restapi
+```
+
+Or with Compose (Atlas or any reachable URI):
+
+```bash
+export MONGODB_URI="your-connection-string"
+docker compose up --build
+```
+
+Optional local MongoDB in Docker (API uses `mongodb://mongo:27017`):
+
+```bash
+docker compose -f docker-compose.yml -f compose.mongo.yaml up --build
+```
+
+Override the host port with `HTTP_PORT` (maps to container `8080`), for example `HTTP_PORT=3000 docker compose up`.
+
 ## API
 
 | Method | Path | Description |

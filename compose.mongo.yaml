@@ -1,0 +1,29 @@
+# Optional: run API against a local MongoDB in Docker.
+# Usage: docker compose -f docker-compose.yml -f compose.mongo.yaml up --build
+#
+# This overrides MONGODB_URI to point at the mongo service and waits for it to be healthy.
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: mongodb://mongo:27017
+
+volumes:
+  mongo_data:
