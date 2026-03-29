@@ -1,0 +1,21 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation (not needed in image build context)
+README.md
+docs/
+
+# Local env (inject at runtime or build with ARG/secret)
+.env
+.env.*
+!.env.example
+
+# Build outputs
+bin/
+*.exe
+
+# IDE
+.idea/
+.vscode/

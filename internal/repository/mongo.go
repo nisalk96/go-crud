@@ -1,17 +1,10 @@
 package repository
 
 import (
-	"context"
-	"time"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-const connectTimeout = 10 * time.Second
-
-func Connect(ctx context.Context, uri string) (*mongo.Client, error) {
-	cctx, cancel := context.WithTimeout(ctx, connectTimeout)
-	defer cancel()
-	return mongo.Connect(cctx, options.Client().ApplyURI(uri))
+func Connect(uri string) (*mongo.Client, error) {
+	return mongo.Connect(options.Client().ApplyURI(uri))
 }

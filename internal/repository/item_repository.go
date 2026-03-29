@@ -7,10 +7,9 @@ import (
 
 	"restapi/internal/models"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 var ErrNotFound = errors.New("document not found")
@@ -26,7 +25,7 @@ func NewItemRepository(db *mongo.Database, collectionName string) *ItemRepositor
 func (r *ItemRepository) Create(ctx context.Context, in models.ItemCreate) (*models.Item, error) {
 	now := time.Now().UTC()
 	doc := models.Item{
-		ID:        primitive.NewObjectID(),
+		ID:        bson.NewObjectID(),
 		Name:      in.Name,
 		Notes:     in.Notes,
 		CreatedAt: now,
@@ -40,7 +39,7 @@ func (r *ItemRepository) Create(ctx context.Context, in models.ItemCreate) (*mod
 }
 
 func (r *ItemRepository) GetByID(ctx context.Context, id string) (*models.Item, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, ErrNotFound
 	}
@@ -73,7 +72,7 @@ func (r *ItemRepository) List(ctx context.Context) ([]models.Item, error) {
 }
 
 func (r *ItemRepository) Update(ctx context.Context, id string, patch models.ItemUpdate) (*models.Item, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, ErrNotFound
 	}
@@ -111,7 +110,7 @@ func (r *ItemRepository) Update(ctx context.Context, id string, patch models.Ite
 }
 
 func (r *ItemRepository) Delete(ctx context.Context, id string) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return ErrNotFound
 	}

@@ -22,7 +22,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	client, err := repository.Connect(ctx, cfg.MongoURI)
+	client, err := repository.Connect(cfg.MongoURI)
 	if err != nil {
 		log.Fatalf("mongo connect: %v", err)
 	}
